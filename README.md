@@ -111,6 +111,37 @@ npm run dev                 # multi-session demo on a sample repo index
 
 Memory persists to `codemind_memory.json` (constructor parameter).
 
+## Use It With Your Own Repo
+
+`npm run dev` runs a scripted two-session demo. To use CodeMind with your own code, build the project and call the class from your code:
+
+```ts
+import { CodeMind } from "./dist/index";
+
+const cm = new CodeMind(undefined, "codemind_memory.json");   // API key from QWEN_API_KEY; memory file path
+cm.loadRepo({
+  "src/auth/JwtFilter.java": "validates JWT tokens, returns 401 on failure",
+  // path -> short signature or description of what the file does
+});
+
+const { answer } = await cm.chat("How should I handle auth errors?");
+await cm.consolidate();   // review warm memories: keep, promote to cold, or discard
+```
+
+Memories extracted from each chat are saved to the memory file, so a later session starts with what earlier sessions learned.
+
+### Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Run `src/index.ts` with ts-node (the built-in demo) |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm start` | Run the compiled build (`node dist/index.js`) |
+
+### Limitations
+
+- `npm run dev` only runs the built-in demo, and the code index is the lightweight simulator described under Honest Status.
+- There are no automated tests. Quality depends on the Qwen model's output, which varies between runs.
 ## Project Structure
 
 ```
